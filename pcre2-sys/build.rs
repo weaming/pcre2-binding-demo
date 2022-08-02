@@ -1,3 +1,4 @@
+use bindgen::{Builder, CargoCallbacks};
 use std::{env, fs};
 use std::path::{Path, PathBuf};
 
@@ -11,6 +12,7 @@ const FILES: &'static [&'static str] = &[
     "pcre2_error.c",
     "pcre2_extuni.c",
     "pcre2_find_bracket.c",
+    "pcre2_fuzzsupport.c",
     "pcre2_jit_compile.c",
     "pcre2_maketables.c",
     "pcre2_match.c",
@@ -18,6 +20,7 @@ const FILES: &'static [&'static str] = &[
     "pcre2_newline.c",
     "pcre2_ord2utf.c",
     "pcre2_pattern_info.c",
+    "pcre2_script_run.c",
     "pcre2_serialize.c",
     "pcre2_string_utils.c",
     "pcre2_study.c",
@@ -31,6 +34,7 @@ const FILES: &'static [&'static str] = &[
 
 fn main() {
     println!("cargo:rerun-if-env-changed=PCRE2_SYS_STATIC");
+    println!("cargo:rerun-if-changed=build.rs");
 
     // let target = env::var("TARGET").unwrap();
     let out = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -44,6 +48,20 @@ fn main() {
     let src = out.join("src");
     fs::create_dir_all(&src).unwrap();
     fs::copy("pcre2/src/pcre2_chartables.c.dist", src.join("pcre2_chartables.c")).unwrap();
+
+    Builder::default()
+        .clang_arg("-DPCRE2_CODE_UNIT_WIDTH=8")
+        .header(include.join("pcre2.h").to_str().unwrap())
+        .ctypes_prefix("::libc")
+        .whitelist_function("^pcre2_.*")
+        .whitelist_type("^pcre2_.*")
+        .whitelist_var("^PCRE2_.*")
+        .blacklist_function("^.*_callout_.*")
+        .blacklist_type("^.*_callout_.*")
+        .generate()
+        .expect("Unable to generate bindings")
+        .write_to_file("./src/bindings.rs")
+        .expect("Couldn't write bindings!");
 
     let mut builder = cc::Build::new();
     builder
@@ -61,7 +79,8 @@ fn main() {
         .define("PCRE2_STATIC", "1")
         .define("STDC_HEADERS", "1")
         .define("SUPPORT_PCRE2_8", "1")
-        .define("SUPPORT_UNICODE", "1");
+        .define("SUPPORT_UNICODE", "1")
+        .define("SUPPORT_JIT", "1");
     
     builder
         .include("pcre2/src")

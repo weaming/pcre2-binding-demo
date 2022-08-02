@@ -1,0 +1,17 @@
+[package]
+name = "pcre2-sys"
+version = "0.1.0"
+authors = ["weaming <garden.yuen@gmail.com>"]
+description = "Low level bindings to PCRE2."
+readme = "README.md"
+keywords = ["pcre", "pcre2", "regex"]
+license = "MIT"
+categories = ["external-ffi-bindings"]
+edition = "2021"
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = { version = "1.0", features = ["parallel"] }
+pkg-config = "0.3"

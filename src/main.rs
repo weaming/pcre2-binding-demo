@@ -1,4 +1,5 @@
 use std::ptr;
+use std::net;
 use pcre2_sys::{
     pcre2_match_8, pcre2_compile_8,
     PCRE2_UCP, PCRE2_UTF,
@@ -71,6 +72,12 @@ fn main() {
         pcre2_code_free_8(code);
     }
 
-    let result = &text[s..e];
-    println!("match: {:?}", result);
+    let mut match_result = text[s..e].to_owned();
+    println!("match result: {:?}", match_result);
+
+    println!("init udp socket");
+    let socket = net::UdpSocket::bind("127.0.0.1:18888").expect("failed to bind socket");
+    println!("sending data");
+    let result = socket.send_to((match_result+"\n").as_bytes(), "127.0.0.1:8888").expect("failed to send message");
+    println!("sent length: {}", result)
 }

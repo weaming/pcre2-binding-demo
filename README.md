@@ -9,3 +9,9 @@
     are contained in arrays of 16-bit and 32-bit code units, respectively.
     These can be interpreted either as single-unit characters or UTF-16/UTF-32
     strings.
+
+## How to play
+
+1. run `make` in one terminal window
+2. run `cargo run` in another terminal window
+3. you will see regexp match result showing on the screen in step 1

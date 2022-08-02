@@ -1,6 +1,12 @@
 # Demo of FFI binding for pcre2
 
-## `_8`、`_16`和`_32`的区别
+## PCRE2
+
+- [pcre2api specification](https://www.pcre.org/current/doc/html/pcre2api.html)
+    - [pcre2demo](https://www.pcre.org/current/doc/html/pcre2demo.html)
+    - [pcre2_compile](https://www.pcre.org/current/doc/html/pcre2_compile.html)
+
+### Difference between functions with suffix `_8`、`_16`和`_32`
 
     By default, a library called libpcre2-8 is built, containing functions that
     take string arguments contained in arrays of bytes, interpreted either as

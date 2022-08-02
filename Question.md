@@ -1,6 +1,6 @@
 一、题意
 
-- 使用 rust 语言调用 pcre2 (源码地址：https://github.com/PhilipHazel/pcre2)，必须亲自动手使用 FFI 绑定 C 接口，不得使用现成的三方库
+- 使用 rust 语言调用 pcre2 (源码地址：https://github.com/PhilipHazel/pcre2 )，必须亲自动手使用 FFI 绑定 C 接口，不得使用现成的三方库
 - 从 **目标文本** 中筛选出符合 **筛选规则** 的 **结果字符串**，
 - 将 **结果字符串** 发送给一个 bash 脚本，
 - 在这个 bash 脚本中接收并打印接收到的结果，

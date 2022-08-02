@@ -1,12 +1,9 @@
-use std::ptr;
-use std::net;
 use pcre2_sys::{
-    pcre2_match_8, pcre2_compile_8,
-    PCRE2_UCP, PCRE2_UTF,
-    pcre2_match_data_create_from_pattern_8,
-    pcre2_code_free_8, pcre2_match_data_free_8,
-    pcre2_get_ovector_pointer_8,
+    pcre2_code_free_8, pcre2_compile_8, pcre2_get_ovector_pointer_8, pcre2_match_8,
+    pcre2_match_data_create_from_pattern_8, pcre2_match_data_free_8, PCRE2_UCP, PCRE2_UTF,
 };
+use std::net;
+use std::ptr;
 
 fn main() {
     let pattern = r"(?<=\d{4})[^\d\s]{3,11}(?=.)";
@@ -25,14 +22,17 @@ fn main() {
         )
     };
     if code.is_null() {
-        panic!("compile failed, error code: {:?}, offset: {:?}", error_code, error_offset);
+        panic!(
+            "compile failed, error code: {:?}, offset: {:?}",
+            error_code, error_offset
+        );
     }
 
-    let match_data = unsafe {
-        pcre2_match_data_create_from_pattern_8(code, ptr::null_mut())
-    };
+    let match_data = unsafe { pcre2_match_data_create_from_pattern_8(code, ptr::null_mut()) };
     if match_data.is_null() {
-        unsafe { pcre2_code_free_8(code); }
+        unsafe {
+            pcre2_code_free_8(code);
+        }
         panic!("could not allocate match_data");
     }
 
@@ -64,20 +64,23 @@ fn main() {
         panic!("error executing match");
     }
 
-    let (s, e) = unsafe {
-        (*ovector.offset(0) as usize, *ovector.offset(1) as usize)
-    };
+    let (s, e) = unsafe { (*ovector.offset(0) as usize, *ovector.offset(1) as usize) };
     unsafe {
         pcre2_match_data_free_8(match_data);
         pcre2_code_free_8(code);
     }
 
-    let mut match_result = text[s..e].to_owned();
+    let match_result = &text[s..e];
     println!("match result: {:?}", match_result);
 
     println!("init udp socket");
     let socket = net::UdpSocket::bind("127.0.0.1:18888").expect("failed to bind socket");
     println!("sending data");
-    let result = socket.send_to((match_result+"\n").as_bytes(), "127.0.0.1:8888").expect("failed to send message");
+    let result = socket
+        .send_to(
+            (match_result.to_owned() + "\n").as_bytes(),
+            "127.0.0.1:8888",
+        )
+        .expect("failed to send message");
     println!("sent length: {}", result)
 }

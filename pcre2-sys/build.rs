@@ -1,6 +1,6 @@
 use bindgen::{Builder, CargoCallbacks};
-use std::{env, fs};
 use std::path::{Path, PathBuf};
+use std::{env, fs};
 
 const FILES: &'static [&'static str] = &[
     "pcre2_auto_possess.c",
@@ -47,7 +47,11 @@ fn main() {
 
     let src = out.join("src");
     fs::create_dir_all(&src).unwrap();
-    fs::copy("pcre2/src/pcre2_chartables.c.dist", src.join("pcre2_chartables.c")).unwrap();
+    fs::copy(
+        "pcre2/src/pcre2_chartables.c.dist",
+        src.join("pcre2_chartables.c"),
+    )
+    .unwrap();
 
     Builder::default()
         .clang_arg("-DPCRE2_CODE_UNIT_WIDTH=8")
@@ -81,7 +85,7 @@ fn main() {
         .define("SUPPORT_PCRE2_8", "1")
         .define("SUPPORT_UNICODE", "1")
         .define("SUPPORT_JIT", "1");
-    
+
     builder
         .include("pcre2/src")
         .include(&include)
